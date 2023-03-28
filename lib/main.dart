@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:laboratoriska3/Model/exam_appointment.dart';
+import 'package:laboratoriska3/widgets/nov_element.dart';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -48,16 +51,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  List<ExamAppointment> _examAppointments = [
+     ExamAppointment(id: '1', examName: 'OOP', date: DateTime(2023, 1, 20)),
+  ];
 
-  void _incrementCounter() {
+  void _addExamAppointment(BuildContext ctx){
+    showModalBottomSheet(context: ctx, builder: (_){
+      return GestureDetector(
+        onTap: () {},
+        child: NovElement(_addNewAppointmentToList),
+        behavior: HitTestBehavior.opaque
+      );
+      }
+    );
+  }
+
+  void _addNewAppointmentToList(ExamAppointment ea){
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _examAppointments.add(ea);
     });
   }
 
@@ -74,42 +85,25 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => _addExamAppointment(context),
+          )
+        ],
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+        child: _examAppointments.isEmpty ? Text("There are no exam appointements yet") :  ListView.builder(itemBuilder: (ctx, index){
+            return Card(elevation: 3,margin: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+              child: ListTile(
+                title: Text(_examAppointments[index].examName),
+                subtitle: Text(DateFormat('dd.MM.yyyy').format(_examAppointments[index].date!)),
+              )
+            );
+          },
+          itemCount: _examAppointments.length
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
